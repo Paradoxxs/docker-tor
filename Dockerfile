@@ -9,7 +9,7 @@ RUN apk add --no-cache xz
 RUN apk add --no-cache zenity
 
 
-ENV TOR_HOME=/HOME/tor-browser/
+ENV TOR_HOME=/home/tor-browser/
 RUN mkdir -p $TOR_HOME
 
 # Create a non-root user
