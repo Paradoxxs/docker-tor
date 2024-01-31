@@ -1,6 +1,5 @@
 FROM ghcr.io/linuxserver/baseimage-kasmvnc:alpine319
 LABEL maintainer="Paradoxxs"
-
 # title
 ENV TITLE=TOR
 
@@ -9,6 +8,10 @@ RUN apk add --no-cache tor
 RUN apk add --no-cache xz
 RUN apk add --no-cache zenity
 
+
+RUN apt-get install -y xz-utils curl
+RUN TOR_HOME=$HOME/tor-browser/
+RUN mkdir -p $TOR_HOME
 
 # Create a non-root user
 RUN adduser -D -h /tor toruser
@@ -22,8 +25,27 @@ run chmod -R 777 /home/tor
 # Change ownership and permissions of /docker-mods
 
 workdir /home/tor/tor-browser
+
+
 # add local files
 COPY /root /
+
+RUN cp $TOR_HOME/tor-browser/start-tor-browser.desktop $TOR_HOME/tor-browser/start-tor-browser.desktop.bak
+RUN cp $TOR_HOME/tor-browser/Browser/browser/chrome/icons/default/default128.png /usr/share/icons/tor.png
+RUN chown 1000:0 /usr/share/icons/tor.png
+RUN sed -i 's/^Name=.*/Name=Tor Browser/g' $TOR_HOME/tor-browser/start-tor-browser.desktop
+RUN sed -i 's/Icon=.*/Icon=\/usr\/share\/icons\/tor.png/g' $TOR_HOME/tor-browser/start-tor-browser.desktop
+RUN sed -i 's/Exec=.*/Exec=sh -c \x27"$HOME\/tor-browser\/tor-browser\/Browser\/start-tor-browser" --detach || ([ !  -x "$HOME\/tor-browser\/tor-browser\/Browser\/start-tor-browser" ] \&\& "$(dirname "$*")"\/Browser\/start-tor-browser --detach)\x27 dummy %k/g'  $TOR_HOME/tor-browser/start-tor-browser.desktop
+
+RUN mkdir -p /tmp/tor-browser/Browser/
+RUN ln -s $TOR_HOME/tor-browser/start-tor-browser.desktop /tmp/tor-browser/Browser/start-tor-browser.desktop 
+
+
+RUN chown -R 1000:0 $TOR_HOME/
+RUN cp $TOR_HOME/tor-browser/start-tor-browser.desktop $HOME/Desktop/
+RUN chown 1000:0  $HOME/Desktop/start-tor-browser.desktop
+
+
 
 # ports and volumes
 EXPOSE 3000
