@@ -9,22 +9,20 @@ RUN apk add --no-cache xz
 RUN apk add --no-cache zenity
 
 
-RUN apt-get install -y xz-utils curl
-RUN TOR_HOME=$HOME/tor-browser/
+ENV TOR_HOME=/HOME/tor-browser/
 RUN mkdir -p $TOR_HOME
 
 # Create a non-root user
-RUN adduser -D -h /tor toruser
+#RUN adduser -D -h /tor toruser
 
 
 
-workdir /home/tor
+workdir $TOR_HOME
 run wget https://www.torproject.org/dist/torbrowser/13.0.9/tor-browser-linux-x86_64-13.0.9.tar.xz
 run tar -xf tor-browser-linux-x86_64-13.0.9.tar.xz
-run chmod -R 777 /home/tor
+run chmod -R 777 $TOR_HOME
 # Change ownership and permissions of /docker-mods
 
-workdir /home/tor/tor-browser
 
 
 # add local files
@@ -40,7 +38,7 @@ RUN sed -i 's/Exec=.*/Exec=sh -c \x27"$HOME\/tor-browser\/tor-browser\/Browser\/
 RUN mkdir -p /tmp/tor-browser/Browser/
 RUN ln -s $TOR_HOME/tor-browser/start-tor-browser.desktop /tmp/tor-browser/Browser/start-tor-browser.desktop 
 
-
+RUN mkdir -p $HOME/Desktop/
 RUN chown -R 1000:0 $TOR_HOME/
 RUN cp $TOR_HOME/tor-browser/start-tor-browser.desktop $HOME/Desktop/
 RUN chown 1000:0  $HOME/Desktop/start-tor-browser.desktop
