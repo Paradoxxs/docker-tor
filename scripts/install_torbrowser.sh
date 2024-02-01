@@ -1,14 +1,10 @@
 #!/usr/bin/env bash
-set -xe
 echo "Install TorBrowser"
 
-if [ "$(arch)" == "aarch64" ]; then
-  SF_VERSION=$(curl -sI https://sourceforge.net/projects/tor-browser-ports/files/latest/download | awk -F'(ports/|/tor)' '/location/ {print $3}')
-  FULL_TOR_URL="https://downloads.sourceforge.net/project/tor-browser-ports/${SF_VERSION}/tor-browser-linux-arm64-${SF_VERSION}.tar.xz"
-else
-  TOR_URL=$(curl -q https://www.torproject.org/download/ | grep downloadLink | grep linux | sed 's/.*href="//g'  | cut -d '"' -f1 | head -1)
-  FULL_TOR_URL="https://www.torproject.org/${TOR_URL}"
-fi
+
+TOR_URL=$(curl -q https://www.torproject.org/download/ | grep downloadLink | grep linux | sed 's/.*href="//g'  | cut -d '"' -f1 | head -1)
+FULL_TOR_URL="https://www.torproject.org/${TOR_URL}"
+
 wget --quiet "${FULL_TOR_URL}" -O /tmp/torbrowser.tar.xz
 tar -xJf /tmp/torbrowser.tar.xz -C $TOR_HOME
 #rm /tmp/torbrowser.tar.xz
@@ -40,9 +36,4 @@ user_pref("torbrowser.settings.quickstart.enabled", true);
 EOL
 
 
-chown -R 1000:0 $TOR_HOME/
-
-mkdir -p $HOME/Desktop/
-cp $TOR_HOME/tor-browser/start-tor-browser.desktop $HOME/Desktop/
-chown 1000:0  $HOME/Desktop/start-tor-browser.desktop
-
+echo "Done Installing TorBrowser"
