@@ -4,7 +4,7 @@ LABEL maintainer="Paradoxxs"
 ENV TITLE=TOR
 RUN mkdir /tor
 ENV TOR_HOME=/tor
-workdir $TOR_HOME
+WORKDIR $TOR_HOME
 
 # Install Tor Browser dependencies
 RUN apt update
